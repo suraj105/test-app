@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><title>Bajra Kellner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f1ec;--sf:#fff;--tx:#1c1a17;--mu:#78716c;--ac:#c2410c;--ac2:#fff;--bd:#e4ded5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171513;--sf:#24211e;--tx:#f3efe9;--mu:#a39b92;--ac:#ea580c;--bd:#38332e}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:15px system-ui,-apple-system,Segoe UI,sans-serif;display:flex;flex-direction:column}
+header{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--sf);border-bottom:1px solid var(--bd)}
+header b{font-size:17px;color:var(--ac)}header .sp{flex:1}
+input,button{font:inherit;color:inherit}
+input{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px;min-width:0}
+button{cursor:pointer;border:1px solid var(--bd);background:var(--sf);border-radius:8px;padding:8px 12px}
+.pri{background:var(--ac);color:var(--ac2);border-color:var(--ac);font-weight:600}
+main{flex:1;display:flex;min-height:0}
+#menu{flex:1;display:flex;flex-direction:column;min-width:0}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding:8px;flex:none}
+#tabs button{white-space:nowrap;border-radius:99px}#tabs .on{background:var(--ac);color:#fff;border-color:var(--ac)}
+#grid{flex:1;overflow:auto;padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;align-content:start}
+.t{min-height:84px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;padding:10px;background:var(--sf)}
+.t:active{transform:scale(.97)}.t small{color:var(--mu);font-size:13px}.t.c{border:2px dashed var(--ac);color:var(--ac)}
+aside{width:330px;flex:none;background:var(--sf);border-left:1px solid var(--bd);display:flex;flex-direction:column}
+#cart{flex:1;overflow:auto;padding:8px}
+.r{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.r span.n{flex:1}.r button{padding:2px 9px}
+.ft{padding:10px;border-top:1px solid var(--bd)}
+.tot{display:flex;justify-content:space-between;font-size:20px;font-weight:700;margin-bottom:8px}
+.ft .pri{width:100%;padding:12px;font-size:16px}
+.empty{color:var(--mu);text-align:center;padding:20px}
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--sf);color:var(--tx);max-width:94vw;width:420px}
+dialog input{width:100%;margin:4px 0 10px}dialog::backdrop{background:#0008}
+.tk{border:1px solid var(--bd);border-radius:10px;padding:10px;margin:8px;background:var(--bg)}
+@media(max-width:760px){main{flex-direction:column}aside{width:100%;height:42%;border-left:0;border-top:1px solid var(--bd)}}
+#ts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:99px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:99}
+small.pd{color:var(--ac);font-weight:600}.row{display:flex;justify-content:space-between;gap:8px;align-items:center}.ac{border:2px solid var(--ac)}
+#co2{display:none;position:fixed;inset:0;z-index:50;background:var(--bg);flex-direction:column;align-items:center;padding:env(safe-area-inset-top,0px) 12px env(safe-area-inset-bottom,0px)}
+#co2 .w{width:100%;max-width:560px;flex:1;display:flex;flex-direction:column;min-height:0}
+#co2 h2{margin:14px 0 8px}#cl{flex:1;overflow:auto;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:6px 14px}
+#cl .row{padding:10px 0;border-bottom:1px solid var(--bd);font-size:17px}
+#co2 .tot{font-size:28px;margin:14px 0}#co2 button{padding:14px;font-size:16px;width:100%;margin-bottom:8px}
+</style></head><body>
+<header><b>🍛 Bajra · Kellner</b><span class="sp"></span>
+<button id="tb">Tische</button>
+<button id="kb">Küche (<span id="kc">0</span>)</button></header>
+<main>
+<div id="menu"><div id="tabs"></div><div id="grid"></div></div>
+<aside><div id="ah" style="padding:10px;border-bottom:1px solid var(--bd);font-weight:700"></div><div id="cart"></div>
+<div class="ft"><div class="tot"><span>Gesamt</span><span id="tot">0,00 €</span></div>
+<button class="pri" id="send">An Küche senden</button>
+<button id="bill" style="width:100%;margin-top:6px">Rechnung / Tisch schließen</button></div></aside>
+</main>
+<dialog id="cd"><b>Eigener Artikel</b><br><br>Name<input id="cn" placeholder="z.B. Spezial Curry">
+Preis (€)<input id="cp" inputmode="decimal" placeholder="0,00">
+<div id="ce" style="color:#dc2626;margin-bottom:6px"></div><div style="display:flex;gap:8px;justify-content:flex-end"><button id="cx">Abbrechen</button><button class="pri" id="co">Hinzufügen</button></div></dialog>
+<dialog id="kd"><b>Gesendete Bestellungen</b><div id="kl"></div><br><button id="kx" style="width:100%">Schließen</button></dialog>
+<div id="co2"><div class="w"><h2 id="ch">Kasse</h2><div id="cl"></div>
+<div class="tot"><span>Gesamt</span><span id="ct"></span></div>
+<button class="pri" id="cp2">Tisch schließen · Bezahlt</button><button id="cb">← Weiter bestellen</button></div></div>
+<div id="ts"></div>
+<dialog id="td"><b>Tische</b>
+<div class="row" style="margin:8px 0"><input id="tn" placeholder="Name / Nr. (z.B. 5 oder Terrasse 2)" style="margin:0;flex:1"><button class="pri" id="ta">＋ Tisch</button></div>
+<div id="tm" style="color:#dc2626"></div><div id="tl" style="max-height:55vh;overflow:auto"></div><br><button id="tx" style="width:100%">Schließen</button></dialog>
+<dialog id="bd"><b id="bh">Rechnung</b><div id="bl" style="margin:10px 0"></div>
+<div class="row"><button id="bc">Abbrechen</button><button class="pri" id="bp">Bezahlt – Tisch leeren</button></div></dialog>
+<script>
+const M={
+"Vorspeisen":"Samosa:5.9,Kauli pakauda:5.5,Paneer pakauda:6.9,Momo Halb:8,Mixed pakauda:9.9,Scampi pakauda:8.9,Chicken pakauda:5.9,Aloo pyaaj pakauda:5.9,Aloo chop:5.9,Seekh kebab:12.9,Samosa chat:10.9",
+"Suppe":"Kwati:5.9,Garam soup:5.9,Chicken soup:5.9,Golbheda ko soup:5.9,Aloo tama:5.9",
+"Salate":"Hara bara salad:5.9,Chicken salad:8.9,Paneer salad:8.9,Scampi salad:12.9",
+"Momo":"Veg momo:11.9,Chicken momo:12.9,Mutton momo:14.9,Spinat Momo:14.9,Veg jhol Momo:13.9,Chicken jhol Momo:14.9,Mutton jhol Momo:15.9,Fried sizzling momo:16.9,Veg c-momo:15.9,Chicken c-momo:15.9,Mutton c-momo:15.9,Veg chhoila momo:15.9,Chicken chhoila momo:15.9,Mutton chhoila momo:15.9",
+"Thukpa":"Veg thukpa:10.9,Chicken thukpa:12.9,Lamm thukpa:13.9,Garnelen thukpa:16.9,Mixed thukpa:16.9",
+"Chowmein":"Veg chowmein:11.9,Egg chowmein:12.9,Chicken chowmein:12.9,Lamm chowmein:14.9,Garnelen chowmein:15.9,Mixed chowmein:16.9",
+"Bhuteko bhaat":"Gemüse bhuteko bhaat:11.9,Chicken bhuteko bhaat:13.9,Lamm bhuteko bhaat:14.9,Garnelen bhuteko bhaat:17.9,Mixed bhuteko bhaat:17.9",
+"Vegetarisch":"Chana masala:9.9,Jhaneko daal:10.9,Mixed tarkari:10.9,Aloo bhyanta:10.9,Tarkari kaju nariwal:11.9,Palak paneer:11.9,Matar paneer:11.9,Aloo cauli:11.9,Malai kofta:11.9,Tarkari masala:12.9,Shahi bengan:12.9,Shahi paprika:12.9,Paneer khumbi masala:12.9,Shahi paneer:13.9,Paneer korma:13.9",
+"Hähnchen":"Chicken curry:10.9,Chicken daal:12.9,Chicken sabji:12.9,Chicken chana:12.9,Chicken saag:12.9,Butter chicken:13.9,Chicken madras:13.9,Chicken juckni:13.9,Chicken mango:14.9,Chicken korma:14.9,Chicken masala:14.9,Sweet chilly Chicken:14.9",
+"Lamm":"Lamm curry:12.9,Lamm daal:12.9,Lamm saag:13.9,Lamm sabji:13.9,Lamm chana:13.9,Lamm madras:14.9,Lamm vindaalo:14.9,Lamm korma:15.9,Butter lamm:15.9,Lamm juckni:15.9,Lamm masala:15.9,Lamm sweet chilly masala:15.9",
+"Ente":"Ente Curry:15.9,Ente masala:16.9,Ente juckni:16.9,Ente korma:17.9,Ente madras:17.9,Ente butter masala:17.9",
+"Garnelen":"Garnelen curry:15.9,Garnelen masala:16.9,Garnelen korma:17.9",
+"Rotbarsch":"Rotbarsch Curry:12.9,Rotbarsch juckni:13.9,Rotbarsch korma:14.9,Rotbarsch Madras:14.9,Rotbarsch masala:15.9,Rotbarsch Butter:15.9,Mango rotbarsch:15.9",
+"Gegrillt":"Paneer taas:16.9,Chicken taas:16.9,Chicken tandoori:17.9,Mutton taas:18.9,Ente taas:18.9,Lachs taas:18.9,Jhinga taas:18.9,Bajra taas:21.9",
+"Thakali set":"Sadha thakali set:18.9,Sadha thakali set plus chicken:20.9,Sadha thakali set plus lamm:23.9",
+"Newari / Khaja":"Chana saag:12.9,Soya korma:13.9,Paneer masala:13.9,Chicken broccoli:14.9,Paneer Chili masala:14.9,Newari Khaja set:22.9,Samaye baji (Veg):26.9,Samaye baji (Non veg):28.9",
+"Beilagen":"Papadam:0.6,Grüne chilli chutney:1.5,Radish pickle:2.2,Mixed pickles:2.2,Bhatura:2.5,Chapati:2.5,Raita:2.5,Extra Basmatireis:2.5,Naan:2.9,Klein pulao reis:2.9,Pommes:3.5,Garlic naan:4.5,Cheese naan:4.5,Groß pulao reis:4.9",
+"Kinder":"Chicken spieß:6.9,Kinder Mixed tarkari:6.9,Kinder Chicken curry:6.9,Chicken nuggets:6.9",
+"Desserts":"Sikhirni:4.9,Rasbari:4.9,Banana frittei:5.9,Heiß und Eis:6.9,Mango Nepal:6.9"};
+const $=id=>document.getElementById(id),eur=n=>n.toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+const h=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+let cat=Object.keys(M)[0],S={T:[],act:null,sent:[]};
+try{const x=JSON.parse(localStorage.getItem('pos2')||'null');if(x&&x.T)S=x}catch(e){}
+const save=()=>{try{localStorage.setItem('pos2',JSON.stringify(S))}catch(e){}};
+const cur=()=>S.T.find(t=>t.id==S.act),tt=t=>t.items.reduce((a,i)=>a+i.p*i.q,0);
+function toast(m){const e=$('ts');e.textContent=m;e.style.opacity=1;clearTimeout(toast.k);toast.k=setTimeout(()=>e.style.opacity=0,1800)}
+const items=c=>M[c].split(',').map(s=>{const i=s.lastIndexOf(':');return{n:s.slice(0,i),p:+s.slice(i+1)}});
+function tabs(){$('tabs').innerHTML='';Object.keys(M).forEach(c=>{const b=document.createElement('button');b.textContent=c;if(c==cat)b.className='on';b.onclick=()=>{cat=c;tabs();grid()};$('tabs').append(b)})}
+function grid(){const g=$('grid');g.innerHTML='';items(cat).forEach(i=>{const b=document.createElement('button');b.className='t';b.innerHTML='<span></span><small>'+eur(i.p)+'</small>';b.firstChild.textContent=i.n;b.onclick=()=>add(i.n,i.p);g.append(b)});
+const c=document.createElement('button');c.className='t c';c.innerHTML='<span>＋ Divers.</span><small>Eigener Artikel</small>';c.onclick=()=>{$('cn').value='';$('cp').value='';$('ce').textContent='';$('cd').showModal()};g.append(c)}
+function add(n,p){const t=cur();if(!t){toast('Zuerst Tisch wählen');renderT();$('td').showModal();return}
+const x=t.items.find(i=>i.n==n&&i.p==p);x?x.q++:t.items.push({n,p,q:1,s:0});save();draw()}
+function draw(){const t=cur(),c=$('cart');c.innerHTML='';$('tb').textContent='Tische ('+S.T.length+')';
+$('ah').textContent=t?'Tisch '+t.name:'Kein Tisch gewählt';
+if(!t||!t.items.length)c.innerHTML='<div class="empty">'+(t?'Noch keine Positionen':'Bitte Tisch wählen oder anlegen')+'</div>';
+(t?t.items:[]).forEach((i,k)=>{const r=document.createElement('div');r.className='r';r.innerHTML='<button>−</button><b>'+i.q+'</b><button>+</button><span class="n">'+h(i.n)+' '+(i.q>i.s?'<small class="pd">neu</small>':'✓')+'</span><span>'+eur(i.p*i.q)+'</span>';
+const[b1,b2]=r.querySelectorAll('button');b1.onclick=()=>{if(--i.q<1)t.items.splice(k,1);else if(i.s>i.q)i.s=i.q;save();draw()};b2.onclick=()=>{i.q++;save();draw()};c.append(r)});
+$('tot').textContent=eur(t?tt(t):0)}
+$('co').onclick=()=>{const n=$('cn').value.trim(),p=parseFloat($('cp').value.replace(',','.'));if(!n||isNaN(p)||p<0){$('ce').textContent='Name und Preis eingeben';return}add(n,p);$('cd').close()};
+$('cx').onclick=()=>$('cd').close();
+$('send').onclick=()=>{const t=cur();if(!t){toast('Zuerst Tisch wählen');return}const ni=t.items.filter(i=>i.q>i.s);if(!ni.length){toast('Nichts Neues zu senden');return}
+S.sent.unshift({t:t.name,time:new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),items:ni.map(i=>({n:i.n,p:i.p,q:i.q-i.s}))});S.sent=S.sent.slice(0,40);ni.forEach(i=>i.s=i.q);save();draw();kc();toast('An Küche gesendet ✓')};
+function kc(){$('kc').textContent=S.sent.length}
+$('kb').onclick=()=>{const l=$('kl');l.innerHTML=S.sent.length?'':'<div class="empty">Noch nichts gesendet</div>';S.sent.forEach(o=>{const d=document.createElement('div');d.className='tk';d.innerHTML='<b>Tisch '+h(o.t)+'</b> · '+o.time+'<br>'+o.items.map(i=>i.q+'× '+h(i.n)).join('<br>');l.append(d)});$('kd').showModal()};
+$('kx').onclick=()=>$('kd').close();
+function renderT(){const l=$('tl');l.innerHTML='';$('tm').textContent='';if(!S.T.length)l.innerHTML='<div class="empty">Noch keine Tische – oben hinzufügen</div>';
+S.T.forEach(t=>{const d=document.createElement('div');d.className='tk'+(t.id==S.act?' ac':'');
+d.innerHTML='<div class="row"><b>Tisch '+h(t.name)+(t.id==S.act?' · aktiv':'')+'</b><b>'+eur(tt(t))+'</b></div><div style="color:var(--mu);margin:6px 0">'+(t.items.length?t.items.map(i=>i.q+'× '+h(i.n)+(i.q>i.s?' •':'')).join('<br>'):'frei')+'</div><div class="row"><button class="pri">Wählen</button><button>Löschen</button></div>';
+const[a,b]=d.querySelectorAll('button');a.onclick=()=>{S.act=t.id;save();draw();$('td').close();if(t.items.length)checkout()};
+b.onclick=()=>{if(t.items.length&&!b.dataset.s){b.dataset.s=1;b.textContent='Sicher? (hat Positionen)';return}S.T=S.T.filter(x=>x!==t);if(S.act==t.id)S.act=null;save();draw();renderT()};l.append(d)})}
+function addT(){const n=$('tn').value.trim();if(!n){$('tm').textContent='Name eingeben';return}
+if(S.T.some(t=>t.name.toLowerCase()==n.toLowerCase())){$('tm').textContent='Tisch existiert bereits';return}
+const t={id:Date.now(),name:n,items:[]};S.T.push(t);S.act=t.id;save();$('tn').value='';draw();renderT();$('td').close()}
+$('ta').onclick=addT;$('tn').onkeydown=e=>{if(e.key=='Enter')addT()};
+$('tb').onclick=()=>{renderT();$('td').showModal()};$('tx').onclick=()=>$('td').close();
+$('bill').onclick=()=>{const t=cur();if(!t||!t.items.length){toast('Keine Positionen am Tisch');return}checkout();return;
+$('bh').textContent='Rechnung · Tisch '+t.name;
+$('bl').innerHTML=t.items.map(i=>'<div class="row"><span>'+i.q+'× '+h(i.n)+'</span><span>'+eur(i.p*i.q)+'</span></div>').join('')+'<div class="row" style="font-size:20px;font-weight:700;margin-top:8px"><span>Gesamt</span><span>'+eur(tt(t))+'</span></div>';$('bd').showModal()};
+$('bc').onclick=()=>$('bd').close();
+$('bp').onclick=()=>{const t=cur();if(t)t.items=[];save();draw();$('bd').close();toast('Tisch geleert ✓')};
+function checkout(){const t=cur();if(!t)return;$('ch').textContent='Kasse · Tisch '+t.name;
+$('cl').innerHTML=t.items.map(i=>'<div class="row"><span>'+i.q+'× '+h(i.n)+'</span><b>'+eur(i.p*i.q)+'</b></div>').join('');
+$('ct').textContent=eur(tt(t));$('co2').style.display='flex'}
+$('cb').onclick=()=>{$('co2').style.display='none'};
+$('cp2').onclick=()=>{const t=cur();if(t)t.items=[];save();draw();$('co2').style.display='none';toast('Tisch geschlossen ✓')};
+tabs();grid();draw();kc();if(!S.T.length){renderT();$('td').showModal()}
+</script></body></html>
